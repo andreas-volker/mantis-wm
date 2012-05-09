@@ -270,11 +270,14 @@ keyspawn(Win *w, Arg *(*a)[2]) {
     v[0] = (t[0] = strtok(buf, " "));
     for(i = 1; (v[i] = (t[i] = strtok(NULL, " "))); i++);
 	if(fork() == 0) {
-		setsid();
-		execvp(v[0], v);
-		perror(v[0]);
-		exit(EXIT_SUCCESS);
+        if(fork() == 0) {
+            setsid();
+            execvp(v[0], v);
+            perror(v[0]);
+        }
+        exit(EXIT_SUCCESS);
     }
+    wait(0);
 }
 
 void
