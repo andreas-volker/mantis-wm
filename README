@@ -1,0 +1,41 @@
+Requirements:
+    C99 compiler and Xlib header files.
+
+Installation:
+    Edit the Makefile, mantisrc and config.h if you want and then use the
+    following commands (as root, if necessary):
+        $ mkdir ~/.mantis-wm
+        $ cp mantisrc ~/.mantis-wm/
+        # make clean install
+    This will create the default directory, and then copy the default rcfile to
+    it, and then build and install the mantis-wm.
+
+Running:
+    Append "exec mantis" to ~/.xinitrc.
+    Notice that you will not have any cursor, panel, wallpaper, nothing.
+    If one wants a left cursor pointer, one just need to use the xsetroot(1)
+    tool, prepending "xsetroot -cursor_name left_ptr &" into the ~/.xinitrc.
+
+Information:
+    As mantis-wm is a window manager, it does not provide a panel, and tags
+    work a bit different than desktops, so the EWMH does not fit in this case.
+    To provide useful information, i create and keep up-to-date two properties
+    named "_MANTIS_TAG" and "_MANTIS_VIEW" on the root window.
+    The _MANTIS_TAG property displays information about each single tag, and
+    _MANTIS_VIEW displays the same information, but about the current
+    selected tag(s).
+    The first part is the only that change between both properties, which is
+    1 or 0 (True or False) on _MANTIS_TAG and a serie of 1s or 0s on
+    _MANTIS_VIEW. it tells whenever the tag is selected or not.
+    Note: the first part of _MANTIS_VIEW is not the bitwise representation, but
+    rather the linear way, from left to right, as i thought would be way more
+    intuitive, i.e. 0100 for the second selected, instead of 0010.
+    It is separated by spaces, and contain:
+        the first is explained above
+        current window number
+        total window number
+        total normal window number
+        total floating window number
+        total urgent window number
+    There are a few ways to retrieve these properties, one way is using the
+    xprop(1) tool, using the command "xprop -root _MANTIS_{TAG,VIEW}".
