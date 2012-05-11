@@ -15,7 +15,7 @@
 
 #define MIN(X, Y)       ((X) < (Y) ? (X) : (Y))
 #define MAX(X, Y)       ((X) > (Y) ? (X) : (Y))
-#define ROUND(X)        (((double)x) + 0.9999999) /* prevents truncation */
+#define ROUND(X)        (((double)X) + 0.9999999) /* prevents truncation */
 #define CLAMP(X, A, Z)  (((X) > (Z)) ? (Z) : (((X) < (A)) ? (A) : (X)))
 #define LEN(X)          (sizeof (X) / sizeof ((X)[0]))
 #define LOCK            (LockMask|Mod2Mask|Mod3Mask) /* caps, num, scroll */
