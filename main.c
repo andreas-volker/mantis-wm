@@ -13,11 +13,11 @@
 #include <X11/XKBlib.h>
 #include <X11/Xproto.h>
 
-#define MIN(x, y)       ((x) < (y) ? (x) : (y))
-#define MAX(x, y)       ((x) > (y) ? (x) : (y))
-#define ROUND(x)        (((double)x) + 0.9999999) /* prevents truncation */
-#define CLAMP(x, a, z)  (((x) > (z)) ? (z) : (((x) < (a)) ? (a) : (x)))
-#define LEN(x)          (sizeof (x) / sizeof ((x)[0]))
+#define MIN(X, Y)       ((X) < (Y) ? (X) : (Y))
+#define MAX(X, Y)       ((X) > (Y) ? (X) : (Y))
+#define ROUND(X)        (((double)x) + 0.9999999) /* prevents truncation */
+#define CLAMP(X, A, Z)  (((X) > (Z)) ? (Z) : (((X) < (A)) ? (A) : (X)))
+#define LEN(X)          (sizeof (X) / sizeof ((X)[0]))
 #define LOCK            (LockMask|Mod2Mask|Mod3Mask) /* caps, num, scroll */
 #define MOD             (ShiftMask|ControlMask|Mod1Mask|Mod4Mask|Mod5Mask)
 
