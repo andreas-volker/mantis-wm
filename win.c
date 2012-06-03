@@ -26,7 +26,6 @@ win_focus(Window win) {
         win = None;
     if(data.current && win && data.current == win)
         return;
-    data.prev = None;
     if(!win) {
         XSetInputFocus(data.dpy, PointerRoot, RevertToNone, CurrentTime);
         XChangeProperty(data.dpy, data.root, ewmh[_NET_ACTIVE_WINDOW],
