@@ -4,8 +4,8 @@ Requirements:
 Installation:
     Edit the Makefile, mantisrc and config.h if you want and then use the
     following commands (as root, if necessary):
-        $ mkdir ~/.mantis-wm
-        $ cp mantisrc ~/.mantis-wm/
+        $ mkdir $XDG_CONFIG_HOME/mantis-wm
+        $ cp mantisrc $XDG_CONFIG_HOME/mantis-wm
         # make clean install
     This will create the default directory, and then copy the default rcfile to
     it, and then build and install the mantis-wm.
