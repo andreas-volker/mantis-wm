@@ -1,2 +1,2 @@
-#define CONFIG ".mantis-wm/mantisrc"    /* "/absolute/path", "home/implied" */
-#define RCLEN 79                        /* max characters length per line */
+#define RCPATH "$XDG_CONFIG_HOME/mantis-wm/mantisrc"
+#define RCLEN 79 /* maximum characters per line */

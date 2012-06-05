@@ -178,6 +178,7 @@ static unsigned int getmodmask(char*);
 static unsigned int getmodnumber(char);
 static char *parselayout(char*);
 static char *parseline(char*);
+static char *parsepath(char*);
 static char *setparsed(char*, char**);
 /* util.c */
 static void *emalloc(size_t);

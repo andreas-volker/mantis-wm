@@ -4,18 +4,14 @@ rc_init(void) {
     char buf[RCLEN + 2], *c;
     FILE *f;
 
-    i = strlen(getenv("HOME")) + strlen(CONFIG) + 1;
-    char path[i];
-    sprintf(path, "%s", CONFIG);
-    if(path[0] != '/')
-        sprintf(path, "%s/%s", getenv("HOME"), CONFIG);
-    if(!(f = fopen(path, "r"))) {
-        perror(path);
-        return;
-    } else for(line = 1, ignore = 0; fgets(buf, RCLEN + 2, f); line++) {
+    c = parsepath(RCPATH);
+    if(!(f = fopen(c, "r")) && !(f = fopen(RCSAMPLE, "r")))
+        eprintf(PROGRAM": "RCSAMPLE": No such file or directory\n");
+    free(c);
+    for(line = 1, ignore = 0; fgets(buf, RCLEN + 2, f); line++) {
         if(buf[strlen(buf) - 1] != '\n') {
             if(ignore != line)
-                fprintf(stderr, PROGRAM": "CONFIG": line %d: "
+                fprintf(stderr, PROGRAM": "RCPATH": line %d: "
                                 "Exceed the %d chars limit.\n", line, RCLEN);
             ignore = line--;
             continue;
@@ -34,7 +30,7 @@ rc_init(void) {
         else
             c = parseline(buf);
         if(c)
-            fprintf(stderr, PROGRAM": "CONFIG": line %d: %s\n", line, c);
+            fprintf(stderr, PROGRAM": "RCPATH": line %d: %s\n", line, c);
     }
     fclose(f);
     data.tagmask = 0L;
@@ -139,6 +135,27 @@ parseline(char *str) {
         v[++j] = NULL;
     }
     return setparsed(start, v);
+}
+
+char*
+parsepath(char *str) {
+    int i, j;
+    char *c, tmp[BUFSIZ];
+
+    c = estrdup(str);
+    for(i = 0; c[i]; i++) {
+        if(c[i] != '$')
+            continue;
+        c[i] = '\0';
+        memset(&tmp, '\0', sizeof(tmp));
+        for(j = 0, i++; isalnum(c[i]) || c[i] == '_'; j++, i++)
+            tmp[j] = c[i];
+        sprintf(tmp, "%s%s%s", c, getenv(tmp) ? getenv(tmp) : "", c + i);
+        free(c);
+        c = estrdup(tmp);
+        i = -1;
+    }
+    return c;
 }
 
 char*
