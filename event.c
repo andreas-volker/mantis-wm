@@ -35,7 +35,11 @@ void
 clientmessage(XEvent *e) {
     Win *w;
     unsigned int type;
+    XWindowAttributes a;
 
+    if(XGetWindowAttributes(data.dpy, e->xclient.window, &a) &&
+       a.override_redirect)
+        return;
     if(e->xclient.message_type == ewmh[_NET_ACTIVE_WINDOW])
         win_focus(e->xclient.window);
     else if(e->xclient.message_type == ewmh[_NET_CLOSE_WINDOW])
