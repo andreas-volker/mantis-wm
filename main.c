@@ -192,6 +192,7 @@ static char *var_set(char*, char**);
 static void win_close(Window);
 static void win_focus(Window);
 static void win_manage(Window);
+static void win_map(Window);
 static void win_resize(Win*);
 static void win_stackreorder(void);
 static void win_toggle(Win*);

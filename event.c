@@ -53,7 +53,7 @@ clientmessage(XEvent *e) {
         ewmh_check(e->xclient.window, &type);
         if(!(type & SINK)) {
             sink_del(e->xclient.window);
-            win_manage(e->xclient.window);
+            win_map(e->xclient.window);
         }
     }
 }
@@ -141,21 +141,7 @@ mappingnotify(XEvent *e) {
 
 void
 maprequest(XEvent *e) {
-    Win *w;
-    Window win;
-
-    win = e->xmaprequest.window;
-    if(!win_get(win)) {
-        win_manage(win);
-        layout_arrange();
-        XMapWindow(data.dpy, win);
-        if(win_get(win)) {
-            if((w = win_get(data.current)) && (w->type & FULL))
-                XLowerWindow(data.dpy, win);
-            else
-                win_focus(win);
-        }
-    }
+    win_map(e->xmaprequest.window);
 }
 
 void

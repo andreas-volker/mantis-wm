@@ -76,6 +76,23 @@ win_manage(Window win) {
 }
 
 void
+win_map(Window win) {
+    Win *w;
+
+    if(win_get(win))
+        return;
+    win_manage(win);
+    layout_arrange();
+    XMapWindow(data.dpy, win);
+    if(win_get(win)) {
+        if((w = win_get(data.current)) && (w->type & FULL))
+            XLowerWindow(data.dpy, win);
+        else
+            win_focus(win);
+    }
+}
+
+void
 win_resize(Win *w) {
     XEvent e;
 
