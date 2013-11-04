@@ -232,8 +232,8 @@ keyrestart(Win *w, Arg *(*a)[2]) {
 
 void
 keyset(Win *w, Arg *(*a)[2]) {
-    size_t len;
     char *c;
+    size_t len;
     unsigned int i, j;
     (void)w;
 
@@ -256,24 +256,45 @@ keyset(Win *w, Arg *(*a)[2]) {
 
 void
 keyspawn(Win *w, Arg *(*a)[2]) {
-    size_t len;
-    unsigned int i, j;
+    int h, i;
+    Bool b;
+    unsigned int c, j;
     (void)w;
 
-    len = strlen((*a)[0]->c);
-    char buf[len];
-    strcpy(buf, (*a)[0]->c);
-    for(i = 0, j = 2; i < len; i++)
-        if(buf[i] == ' ')
-            ++j;
-    char *t[j], *v[j];
-    v[0] = (t[0] = strtok(buf, " "));
-    for(i = 1; (v[i] = (t[i] = strtok(NULL, " "))); i++);
+    data_cmdfree();
+    data.cmd = emalloc(sizeof(char*));
+    data.cmd[0] = NULL;
+    for(b = True, c = h = i = j = 0; (*a)[0]->c[i]; i++) {
+        for(; (*a)[0]->c[i] == ' '; i++);
+        if((*a)[0]->c[(h = i)] == '\"') {
+            h++;
+            while((*a)[0]->c[++i] && (*a)[0]->c[i] != '\"');
+        } else
+            for(; (*a)[0]->c[i] && (*a)[0]->c[i] != ' '; i++);
+        if(b) {
+            if(h < i)
+                c++;
+            if(!(*a)[0]->c[i] || !(*a)[0]->c[i+1]) {
+                b = False;
+                i = -1;
+                data_cmdfree();
+                data.cmd = emalloc(sizeof(char*) * (c + 1));
+            }
+        } else {
+            if(!(*a)[0]->c[h])
+                break;
+            data.cmd[j] = emalloc((i - h) + 1);
+            sprintf(data.cmd[j++], "%.*s", (i - h), ((*a)[0]->c + h));
+            if(!(*a)[0]->c[i])
+                break;
+        }
+    }
+    data.cmd[j] = NULL;
 	if(fork() == 0) {
         if(fork() == 0) {
             setsid();
-            execvp(v[0], v);
-            perror(v[0]);
+            execvp(data.cmd[0], data.cmd);
+            perror(data.cmd[0]);
         }
         exit(EXIT_SUCCESS);
     }
@@ -291,7 +312,7 @@ keyswitch(Win *w, Arg *(*a)[2]) {
     data.wins = list_insert(data.wins, w, i);
     layout_arrange();
     ewmh_list();
-    win_updateinfo();
+    atom_update();
 }
 
 void
@@ -312,7 +333,7 @@ keytag(Win *w, Arg *(*a)[2]) {
     win_stackreorder();
     win_updateborder();
     data.keypress = True;
-    win_updateinfo();
+    atom_update();
 }
 
 void

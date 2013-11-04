@@ -17,8 +17,8 @@ rc_init(void) {
             continue;
         }
         for(i = 0; buf[i] != '#' && buf[i] != '\n';)
-            if(buf[++i] == '\"')
-                while(buf[++i] != '\"');
+            if(buf[++i] == '\'')
+                while(buf[++i] != '\'');
         for(--i; i >= 0 && (buf[i] == ' ' || buf[i] == '\t'); i--);
         for(; ++i < (RCLEN + 1); (buf[i] = '\0'));
         if(ignore == line || !buf[0])
@@ -89,12 +89,12 @@ parselayout(char *str) {
                 ++j;
         for(i = 0; isspace(str[i]); i++);
         return layout_add(NULL, str + i, j);
-    } else if((c = strchr(str, '\"'))) {
-        for(i = 1; c[i] != '\"'; i++);
+    } else if((c = strchr(str, '\''))) {
+        for(i = 1; c[i] != '\''; i++);
         c[i] = '\0';
         return layout_add(++c, NULL, 1);
     } else
-        return "Layout name must be \"quoted\"";
+        return "Layout name must be \'single quoted\'";
 }
 
 char*
@@ -105,7 +105,7 @@ parseline(char *str) {
     if(!str)
         return "Nothing to parse.";
     for(i = 0, j = 2, b = False; str[i]; i++) {
-        if(str[i] == '\"')
+        if(str[i] == '\'')
             if(!(b = !b))
                 ++j;
         if(!b && !isalnum(str[i]) && isalnum(str[i + 1]))
@@ -118,11 +118,11 @@ parseline(char *str) {
         v[i] = NULL;
     }
     for(i = 0, j = 0; str[i]; i++) {
-        if(!isalnum(str[i]) && str[i] != '\"' && str[i] != '<')
+        if(!isalnum(str[i]) && str[i] != '\'' && str[i] != '<')
             continue;
         if(!isalnum((start[j] = str[i])))
             ++i;
-        end[j] = start[j] == '\"' ? '\"' : (start[j] == '<'  ? '>'  : ',');
+        end[j] = start[j] == '\'' ? '\'' : (start[j] == '<'  ? '>'  : ',');
         if(isdigit(str[i]) && str[i - 1] == '-')
             --i;
         for(k = 0; str[i] && str[i] != end[j]; i++, k++) {
@@ -175,7 +175,7 @@ setparsed(char *c, char **v) {
         return button_add(v[0], v[1]);
     memset(&type, '-', sizeof(type));
     for(i = 0; v[i] && i < LEN(type); i++)
-        type[i] = (c[i + 2] == '\"' ? 'c' : (isdigit(c[i + 2]) ? 'i' :
+        type[i] = (c[i + 2] == '\'' ? 'c' : (isdigit(c[i + 2]) ? 'i' :
                   (c[i + 2] == '<'  ? 'm' : (isalpha(c[i + 2]) ? 'n' : '-'))));
     for(i = 0; i < LEN(argv); i++)
         argv[i] = v[i + 2];

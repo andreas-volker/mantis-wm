@@ -75,6 +75,8 @@ typedef struct {
 
 struct {
     Display         *dpy;
+    char            **cmd;
+    Atom            atom[3];
     Bool            run, keypress;
     int             screen, width, height, ret;
     Window          root, chld, current, prev, empty, lastsink;
@@ -92,12 +94,19 @@ struct {
     unsigned int    follow_mod;
 } var;
 
+/* atom.c */
+static void atom_free(void);
+static void atom_init(void);
+static void atom_update(void);
 /* button.c */
 static char *button_add(char*, char*);
 static void button_free(void);
 static void button_func(Win*, unsigned int);
 static void button_grab(Window);
 static void moveresizemouse(Win*, unsigned int);
+/* data.c */
+static void data_cmdfree(void);
+static void data_listfree(void);
 /* event.c */
 static void buttonpress(XEvent*);
 static void clientmessage(XEvent*);
@@ -111,12 +120,13 @@ static void maprequest(XEvent*);
 static void propertynotify(XEvent*);
 static void unmapdestroynotify(XEvent*);
 /* ewmh.c */
-static void ewmh_init(void);
 static void ewmh_area(void);
 static Bool ewmh_atoms(Window, Atom, Atom**);
 static void ewmh_change(Window, Atom, Atom, int);
 static void ewmh_check(Window, unsigned int*);
 static void ewmh_frame(void);
+static void ewmh_free(void);
+static void ewmh_init(void);
 static void ewmh_list(void);
 static char *ewmh_str(int);
 /* icccm.c */
@@ -198,7 +208,6 @@ static void win_stackreorder(void);
 static void win_toggle(Win*);
 static void win_unmanage(Win*);
 static void win_updateborder(void);
-static void win_updateinfo(void);
 static void win_updatetype(Win*);
 static Bool win_first(unsigned long, unsigned int, List**, Win**);
 static Win *win_get(Window);
@@ -212,6 +221,8 @@ static Bool win_nth(unsigned long, unsigned int, List**, Win**, unsigned int);
 static Bool win_prev(unsigned long, unsigned int, List**, Win**);
 
 #include "config.h"
+#include "atom.c"
+#include "data.c"
 #include "util.c"
 #include "list.c"
 #include "var.c"
@@ -227,34 +238,16 @@ static Bool win_prev(unsigned long, unsigned int, List**, Win**);
 
 void
 clean(void) {
-    Win *w;
-    List *l;
-    unsigned int i;
-
     button_free();
     key_free();
     var_free();
     layout_free();
     sink_free();
-    XFreeColors(data.dpy, data.colormap, data.border, 3, 0);
-    for(i = 0; i < LASTEwmh; i++)
-        XDeleteProperty(data.dpy, data.root, ewmh[i]);
-    XDeleteProperty(data.dpy, data.root, XInternAtom(data.dpy, "_MANTIS_TAG",
-                                                     False));
-    XDeleteProperty(data.dpy, data.root, XInternAtom(data.dpy, "_MANTIS_VIEW",
-                                                     False));
-    for(l = list_first(data.wins); l;) {
-        w = (Win*)l->ptr;
-        l = l->next;
-        XSetWindowBorderWidth(data.dpy, w->win, 0);
-        XSelectInput(data.dpy, w->win, NoEventMask);
-        XUngrabButton(data.dpy, AnyButton, AnyModifier, w->win);
-        if(!(w->tag & data.tag))
-            XMoveWindow(data.dpy, w->win, w->x, w->y);
-        data.wins = list_remove(data.wins, w);
-        data.stack = list_remove(data.stack, w);
-        free(w);
-    }
+    atom_free();
+    ewmh_free();
+    data_cmdfree();
+    data_listfree();
+    XFreeColors(data.dpy, data.colormap, data.border, LEN(data.border), 0);
     XSelectInput(data.dpy, data.root, NoEventMask);
     XUngrabKey(data.dpy, AnyKey, AnyModifier, data.root);
     XSetInputFocus(data.dpy, PointerRoot, RevertToNone, CurrentTime);
@@ -310,6 +303,7 @@ init(void) {
     XSelectInput(data.dpy, data.root, SubstructureRedirectMask|
                  StructureNotifyMask|SubstructureNotifyMask);
     key_grab();
+    atom_init();
     ewmh_init();
     icccm_init();
     if(data.run && XQueryTree(data.dpy, data.root, &dw, &dw, &wins, &len))

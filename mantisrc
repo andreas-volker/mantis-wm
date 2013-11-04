@@ -1,4 +1,4 @@
-# layout "name":
+# layout 'name':
 #   x, y, width, height, column, row;
 #
 # Values are percentage, and number of columns/rows.
@@ -18,19 +18,19 @@
 # otherwise, it uses the provide number.
 # Just be sure to not define a number on both fields, as it is impossible to
 # create, for example, a grid with 2x2 using 1 or 10 windows.
-layout "right-stack":
+layout 'right-stack':
     0, 0, 100, 100; 0, 0, 50, 100;
     50, 0, 50, 100, 1, 0;
-layout "bottom-stack":
+layout 'bottom-stack':
     0, 0, 100, 100; 0, 0, 100, 50;
     0, 50, 100, 50, 0, 1;
-layout "grid":
+layout 'grid':
     0, 0, 100, 100, 0, 0;
-layout "h-tile":
+layout 'h-tile':
     0, 0, 100, 100, 1, 0;
-layout "v-tile":
+layout 'v-tile':
     0, 0, 100, 100, 0, 1;
-layout "fullscreen":
+layout 'fullscreen':
     0, 0, 100, 100;
 # variable = value
 #
@@ -44,13 +44,13 @@ layout "fullscreen":
 # float window is the common window type in most of window managers.
 # Popup, splash, fixed-size window should be treated as float window.
 # Everything else is normal.
-sinks = "DESKTOP,DOCK,STICKY,HIDDEN"
-floats = "TOOLBAR,MENU,UTILITY,SPLASH,DIALOG,MODAL"
+sinks = 'DESKTOP,DOCK,STICKY,HIDDEN'
+floats = 'TOOLBAR,MENU,UTILITY,SPLASH,DIALOG,MODAL'
 # border color around focused, unfocused and urgent windows
-border_in = "#00F000"
-border_out = "#404040"
-border_urgent = "#F00000"
-layout = "right-stack" # default layout
+border_in = '#00F000'
+border_out = '#404040'
+border_urgent = '#F00000'
+layout = 'right-stack' # default layout
 tags = 4 # maximum number of tags
 # gap between window and around the screen (pixel)
 gap_win = 2
@@ -75,25 +75,26 @@ follow_mod = <M1-M4> # with what modifier key? <0> means no mod
 <M4-S-w> close = ALL
 <M1-w> close = ALLELSE # every window except the current one
 <M4-e> toggle # toggle between NORMAL and FLOAT on current
-<M4-r> spawn = "dmenu_run"
-<M4-t> spawn = "urxvt"
+<M4-r> spawn = 'dmenu_run'
+<M4-t> spawn = 'urxvt'
+<M4-Print> spawn = 'scrot "%Y%m%d %Hh%Mm%Ss.png" -q100' # double quote works
 # Set variable value, cycling through it. Value is separated with spaces, if
 # the current value is matched, the next will be used to set.
-# E.g. "gap_top", "0 12", when the current gap is 0, set to 12,
+# E.g. 'gap_top', '0 12', when the current gap is 0, set to 12,
 # when current is 12, set to 0.
-<M4-a> set = "gap_top", "0 12"
-<M4-s> set = "gap_win", "2 12"
-<M4-y> set = "layout", "right-stack"
-<M4-u> set = "layout", "bottom-stack"
-<M4-i> set = "layout", "grid"
-<M4-o> set = "layout", "h-tile"
-<M4-p> set = "layout", "v-tile"
-<M1-p> set = "layout", "right-stack bottom-stack grid h-tile v-tile fullscreen"
+<M4-a> set = 'gap_top', '0 12'
+<M4-s> set = 'gap_win', '2 12'
+<M4-y> set = 'layout', 'right-stack'
+<M4-u> set = 'layout', 'bottom-stack'
+<M4-i> set = 'layout', 'grid'
+<M4-o> set = 'layout', 'h-tile'
+<M4-p> set = 'layout', 'v-tile'
+<M1-p> set = 'layout', 'right-stack bottom-stack grid h-tile v-tile fullscreen'
 # macro execute the keys, just be sure to copy the value exactly as you wrote.
-<M4-C-Tab> set = "layout", "fullscreen right-stack"
-<M4-S-Tab> set = "border_width", "0 1"
-<M4-C-S-Tab> set = "gap_win", "0 2"
-<M4-Tab> macro = "<M4-C-Tab> <M4-S-Tab> <M4-C-S-Tab>"
+<M4-C-Tab> set = 'layout', 'fullscreen right-stack'
+<M4-S-Tab> set = 'border_width', '0 1'
+<M4-C-S-Tab> set = 'gap_win', '0 2'
+<M4-Tab> macro = '<M4-C-Tab> <M4-S-Tab> <M4-C-S-Tab>'
 # focus NORMAL/FLOAT/URGENT/INPUT windows
 <M4-h> focus = NORMAL, -777
 <M4-j> focus = NORMAL, -1

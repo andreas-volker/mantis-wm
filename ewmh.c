@@ -43,44 +43,6 @@ enum { _NET_SUPPORTED,
 static Atom ewmh[LASTEwmh];
 
 void
-ewmh_init(void) {
-    int i;
-    Atom a;
-    char *c;
-    long l[4];
-
-    a = XInternAtom(data.dpy, "UTF8_STRING", False);
-    data.chld = XCreateWindow(data.dpy, data.root, 0, 0, 1, 1, 0,
-                              CopyFromParent, InputOnly, CopyFromParent, 0L,
-                              NULL);
-    for(i = 0; i < LASTEwmh; i++) {
-        ewmh[i] = XInternAtom(data.dpy, ewmh_str(i), False);
-        XDeleteProperty(data.dpy, data.root, ewmh[i]);
-    }
-    c = PROGRAM;
-    i = strlen(c) + 1;
-#define EWMH(A, B, C, D, E, F) (XChangeProperty(data.dpy, (A), ewmh[(B)], (C),\
-                               (D), PropModeReplace, (unsigned char*)(E), (F)))
-    EWMH(data.root, _NET_DESKTOP_NAMES,       a, 8, c, i);
-    EWMH(data.root, _NET_WM_NAME,             a, 8, c, i);
-    EWMH(data.chld, _NET_WM_NAME,             a, 8, c, i);
-    EWMH(data.root, _NET_SUPPORTING_WM_CHECK, XA_WINDOW,   32, &data.chld, 1);
-    EWMH(data.chld, _NET_SUPPORTING_WM_CHECK, XA_WINDOW,   32, &data.chld, 1);
-    EWMH(data.root, _NET_SUPPORTED,           XA_ATOM,     32, ewmh, LASTEwmh);
-    memset(&l, 0, sizeof(l));
-    EWMH(data.root, _NET_DESKTOP_VIEWPORT,    XA_CARDINAL, 32, &l, 2);
-    EWMH(data.root, _NET_CURRENT_DESKTOP,     XA_CARDINAL, 32, &l, 1);
-    l[0] = data.dwidth;
-    l[1] = data.dheight;
-    EWMH(data.root, _NET_DESKTOP_GEOMETRY,    XA_CARDINAL, 32, &l, 2);
-    l[0] = 1;
-    EWMH(data.root, _NET_NUMBER_OF_DESKTOPS,  XA_CARDINAL, 32, &l, 1);
-#undef EWMH
-    ewmh_area();
-    ewmh_frame();
-}
-
-void
 ewmh_area(void) {
     long l[4];
 
@@ -199,6 +161,52 @@ ewmh_frame(void) {
     XChangeProperty(data.dpy, data.root, ewmh[_NET_FRAME_EXTENTS], XA_CARDINAL,
                     32, PropModeReplace, (unsigned char*)&d, 4);
     win_updateborder();
+}
+
+void
+ewmh_free(void) {
+    unsigned int i;
+
+    for(i = 0; i < LASTEwmh; i++)
+        XDeleteProperty(data.dpy, data.root, ewmh[i]);
+}
+
+void
+ewmh_init(void) {
+    int i;
+    Atom a;
+    char *c;
+    long l[4];
+
+    a = XInternAtom(data.dpy, "UTF8_STRING", False);
+    data.chld = XCreateWindow(data.dpy, data.root, 0, 0, 1, 1, 0,
+                              CopyFromParent, InputOnly, CopyFromParent, 0L,
+                              NULL);
+    for(i = 0; i < LASTEwmh; i++) {
+        ewmh[i] = XInternAtom(data.dpy, ewmh_str(i), False);
+        XDeleteProperty(data.dpy, data.root, ewmh[i]);
+    }
+    c = PROGRAM;
+    i = strlen(c) + 1;
+#define EWMH(A, B, C, D, E, F) (XChangeProperty(data.dpy, (A), ewmh[(B)], (C),\
+                               (D), PropModeReplace, (unsigned char*)(E), (F)))
+    EWMH(data.root, _NET_DESKTOP_NAMES,       a, 8, c, i);
+    EWMH(data.root, _NET_WM_NAME,             a, 8, c, i);
+    EWMH(data.chld, _NET_WM_NAME,             a, 8, c, i);
+    EWMH(data.root, _NET_SUPPORTING_WM_CHECK, XA_WINDOW,   32, &data.chld, 1);
+    EWMH(data.chld, _NET_SUPPORTING_WM_CHECK, XA_WINDOW,   32, &data.chld, 1);
+    EWMH(data.root, _NET_SUPPORTED,           XA_ATOM,     32, ewmh, LASTEwmh);
+    memset(&l, 0, sizeof(l));
+    EWMH(data.root, _NET_DESKTOP_VIEWPORT,    XA_CARDINAL, 32, &l, 2);
+    EWMH(data.root, _NET_CURRENT_DESKTOP,     XA_CARDINAL, 32, &l, 1);
+    l[0] = data.dwidth;
+    l[1] = data.dheight;
+    EWMH(data.root, _NET_DESKTOP_GEOMETRY,    XA_CARDINAL, 32, &l, 2);
+    l[0] = 1;
+    EWMH(data.root, _NET_NUMBER_OF_DESKTOPS,  XA_CARDINAL, 32, &l, 1);
+#undef EWMH
+    ewmh_area();
+    ewmh_frame();
 }
 
 void

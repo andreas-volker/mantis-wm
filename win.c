@@ -31,7 +31,7 @@ win_focus(Window win) {
         XChangeProperty(data.dpy, data.root, ewmh[_NET_ACTIVE_WINDOW],
                         XA_WINDOW, 32, PropModeReplace,
                         (unsigned char*)&data.empty, 1);
-        win_updateinfo();
+        atom_update();
         return;
     }
     data.prev = data.current;
@@ -42,7 +42,7 @@ win_focus(Window win) {
     XSetInputFocus(data.dpy, win, RevertToPointerRoot, CurrentTime);
     XChangeProperty(data.dpy, data.root, ewmh[_NET_ACTIVE_WINDOW], XA_WINDOW,
                     32, PropModeReplace, (unsigned char*)&win, 1);
-    win_updateinfo();
+    atom_update();
 }
 
 void
@@ -201,33 +201,6 @@ win_updateborder(void) {
 }
 
 void
-win_updateinfo(void) {
-    Atom a[3];
-    char c[BUFSIZ];
-    unsigned int i, j, k;
-    unsigned long l;
-
-    a[0] = XInternAtom(data.dpy, "UTF8_STRING", False);
-    a[1] = XInternAtom(data.dpy, "_MANTIS_TAG", False);
-    a[2] = XInternAtom(data.dpy, "_MANTIS_VIEW", False);
-    XDeleteProperty(data.dpy, data.root, a[1]);
-    XDeleteProperty(data.dpy, data.root, a[2]);
-    for(i = 0, j = 1; (1<<i) <= (int)data.tagmask + 1; i++) {
-        if((1<<i) <= (int)data.tagmask) {
-            l = 1<<i;
-            sprintf(c, "%d", (data.tag & l) > 0);
-        } else for(k = 0, j = 2, l = data.tag; k < i; k++)
-            sprintf(c, "%s%d", c, (data.tag & (1<<k)) > 0);
-        sprintf(c, "%s %d %d %d %d %d", c, win_index(l, ~0, data.current) + 1,
-                win_len(l, ~0), win_len(l, NORMAL), win_len(l, FLOAT),
-                win_len(l, URGENT));
-        XChangeProperty(data.dpy, data.root, a[j], a[0], 8, PropModeAppend,
-                        (unsigned char*)c, strlen(c) + 1);
-        memset(&c, '\0', sizeof(c));
-    }
-}
-
-void
 win_updatetype(Win *w) {
     unsigned int old;
 
@@ -272,7 +245,7 @@ win_updatetype(Win *w) {
         win_stackreorder();
         layout_arrange();
     }
-    win_updateinfo();
+    atom_update();
 }
 
 Bool
